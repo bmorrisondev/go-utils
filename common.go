@@ -1,4 +1,4 @@
-package bmoutils
+package utils
 
 import (
 	"encoding/json"
