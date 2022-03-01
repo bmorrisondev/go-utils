@@ -30,6 +30,10 @@ func BadRequestResponse(body *string) (events.APIGatewayProxyResponse, error) {
 	return makeResponse(body, 400)
 }
 
+func NotFoundResoonse() (events.APIGatewayProxyResponse, error) {
+	return makeResponse(nil, 400)
+}
+
 func makeResponse(body *string, statusCode int) (events.APIGatewayProxyResponse, error) {
 	res := events.APIGatewayProxyResponse{
 		Headers: map[string]string{
