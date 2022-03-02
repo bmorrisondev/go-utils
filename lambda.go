@@ -7,6 +7,33 @@ import (
 	"github.com/pkg/errors"
 )
 
+type LambdaRouter struct {
+	Get    func(events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+	Post   func(events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+	Put    func(events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+	Patch  func(events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+	Delete func(events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+}
+
+func (lr *LambdaRouter) Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	if request.HTTPMethod == "GET" && lr.Get != nil {
+		return lr.Get(request)
+	}
+	if request.HTTPMethod == "POST" && lr.Post != nil {
+		return lr.Post(request)
+	}
+	if request.HTTPMethod == "PUT" && lr.Put != nil {
+		return lr.Put(request)
+	}
+	if request.HTTPMethod == "PATCH" && lr.Patch != nil {
+		return lr.Patch(request)
+	}
+	if request.HTTPMethod == "DELETE" && lr.Delete != nil {
+		return lr.Delete(request)
+	}
+	return NotFoundResponse()
+}
+
 func ErrorResponse(err error, message string) (events.APIGatewayProxyResponse, error) {
 	err = errors.Wrap(err, message)
 	log.Println(err)
@@ -30,7 +57,7 @@ func BadRequestResponse(body *string) (events.APIGatewayProxyResponse, error) {
 	return makeResponse(body, 400)
 }
 
-func NotFoundResoonse() (events.APIGatewayProxyResponse, error) {
+func NotFoundResponse() (events.APIGatewayProxyResponse, error) {
 	return makeResponse(nil, 400)
 }
 
